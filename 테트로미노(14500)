@@ -1,0 +1,107 @@
+#include <stdio.h>
+#include <vector>
+#include <stack>
+#include <cstring>
+using namespace std;
+
+int N, M;			//배열 크기
+int map[501][501];
+int dx[4] = { 0,0,1,-1 };
+int dy[4] = { 1,-1 ,0,0 };
+bool visit[501][501];
+int maxx;
+stack <pair<int, int>> make_4;
+int cnt = 0;
+int sum = 0;
+int kx, ky;
+ 
+void input() {			//입력
+	scanf("%d %d", &N, &M);
+
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			scanf("%d", &map[i][j]);
+		}
+	}
+}
+
+
+void chose_pie(int x, int y) {
+
+	sum = sum + map[x][y];
+	cnt++;
+	if (cnt == 4) {
+		if (sum > maxx) 			maxx = sum;
+		return;
+	}
+	visit[x][y] = true;
+
+	for (int i = 0; i < 4; i++) {
+		int xx = x + dx[i];
+		int yy = y + dy[i];
+
+		if (xx < 0 || yy < 0 || xx >= N || yy >= M)	continue;	//범위 초과
+
+		if (visit[xx][yy] == true)	continue;		//방문한 곳이면 가지 않음
+		else {
+			chose_pie(xx, yy);
+			sum -= map[xx][yy];
+			cnt--;
+		}
+	}
+	visit[x][y] = false;
+}
+
+void fuckshape(int x, int y) {
+	sum = 0;
+	
+	if (!(x + 2 >= N || y + 1 >= M)) {	//ㅏ
+
+		sum = map[x][y] + map[x + 1][y] + map[x + 2][y] + map[x + 1][y + 1];
+		if (sum > maxx) 			maxx = sum;
+
+	}
+
+	if (!(x -1 < 0 || y + 2 >= M)) { //ㅗ
+
+		sum = map[x][y] + map[x][y+1] + map[x][y+2] + map[x -1][y + 1];
+		if (sum > maxx) 			maxx = sum;
+
+	}
+	if (!(x + 1 >= N || y + 2 >= M)) {	//ㅜ
+
+		sum = map[x][y] + map[x][y + 1] + map[x][y + 2] + map[x + 1][y + 1];
+		if (sum > maxx) 			maxx = sum;
+
+	}
+	if (!(x + 2 >= N || y - 1 < 0)) {	//ㅓ
+
+		sum = map[x][y] + map[x + 1][y] + map[x + 2][y] + map[x + 1][y - 1];
+		if (sum > maxx) 			maxx = sum;
+
+	}
+}
+
+void func() {
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+
+			sum = 0;
+			cnt = 0;
+			chose_pie(i, j);			// dfs시작
+			fuckshape(i, j);
+		}
+	}
+
+}
+
+int main() {
+	input();
+	func();
+	printf("%d", maxx);
+
+	return 0;
+}
+
+
+
